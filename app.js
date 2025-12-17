@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const { errors } = require("celebrate");
+const routes = require("./routes/index");
 
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 const errorHandler = require("./middlewares/error-handler");
@@ -13,11 +14,6 @@ const {
   validateUserCreation,
 } = require("./middlewares/validation");
 const { login, createUser } = require("./controllers/usersController");
-
-const userRouter = require("./routes/users");
-const articleRouter = require("./routes/articles");
-const newsRouter = require("./routes/news");
-const datasetRouter = require("./routes/dataset");
 
 const { PORT = 3001, MONGO_URL = "mongodb://127.0.0.1:27017/news_db" } =
   process.env;
@@ -49,17 +45,10 @@ app.use(requestLogger);
 // Public routes
 app.post("/signup", validateUserCreation, createUser);
 app.post("/signin", validateLogin, login);
-app.use("/dataset", datasetRouter);
-app.use("/news", newsRouter);
-app.use("/api/users", userRouter);
 
 app.use(auth);
 
-// Protected routes
-//app.use("/users", userRouter);
-app.use("/articles", articleRouter);
-
-// Logging & error handling
+app.use(routes);
 app.use(errorLogger);
 app.use(errors());
 app.use(errorHandler);
@@ -69,5 +58,4 @@ mongoose
   .connect(MONGO_URL)
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("MongoDB connection error:", err));
-
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));

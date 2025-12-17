@@ -22,8 +22,10 @@ const saveArticle = (req, res, next) => {
   })
     .then((article) => res.status(201).send(article))
     .catch((err) => {
+      console.error("ARTICLE CREATE ERROR:", err);
+
       if (err.name === "ValidationError") {
-        next(new BadRequestError("Invalid article data"));
+        res.status(400).json({ message: err.message });
       } else {
         next(err);
       }

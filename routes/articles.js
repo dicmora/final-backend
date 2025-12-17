@@ -5,14 +5,14 @@ const {
   saveArticle,
   deleteArticle,
 } = require("../controllers/articles");
-const { validateArticle, validateId } = require("../middlewares/validation");
+const { validateId } = require("../middlewares/validation");
 
 const router = express.Router();
 
 router.use(auth);
 
 router.get("/", getArticles);
-router.post("/", validateArticle, saveArticle);
+router.post("/", saveArticle);
 router.delete("/:articleId", validateId, deleteArticle);
 
 module.exports = router;
