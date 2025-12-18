@@ -20,6 +20,8 @@ const { PORT = 3001, MONGO_URL = "mongodb://127.0.0.1:27017/news_db" } =
 
 const app = express();
 
+app.set("etag", false);
+
 const allowedOrigins = [
   "https://dailynews.mysaol.com",
   "http://localhost:3000",
@@ -29,9 +31,7 @@ app.use(
   cors({
     origin(origin, callback) {
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
+      if (allowedOrigins.includes(origin)) return callback(null, true);
       return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
@@ -42,18 +42,20 @@ app.use(
 app.use(express.json());
 app.use(requestLogger);
 
-// Public routes
 app.post("/signup", validateUserCreation, createUser);
 app.post("/signin", validateLogin, login);
+app.use("/dataset", routes.datasetRouter);
+app.use("/news", routes.newsRouter);
 
 app.use(auth);
 
-app.use(routes);
+app.use("/users", routes.userRouter);
+app.use("/articles", routes.articleRouter);
+
 app.use(errorLogger);
 app.use(errors());
 app.use(errorHandler);
 
-// MongoDB connection
 mongoose
   .connect(MONGO_URL)
   .then(() => console.log("Connected to MongoDB"))
