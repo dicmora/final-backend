@@ -47,7 +47,7 @@ app.post("/signin", validateLogin, login);
 app.use("/dataset", routes.datasetRouter);
 app.use("/news", routes.newsRouter);
 
-app.use(auth);
+// app.use(auth);
 
 app.use("/users", routes.userRouter);
 app.use("/articles", routes.articleRouter);
